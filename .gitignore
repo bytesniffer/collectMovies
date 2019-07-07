@@ -5,3 +5,7 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+venv
+*/__pycache__
+*.log
+out
