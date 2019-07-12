@@ -1,10 +1,10 @@
 import urllib
 import time
 import logging
-import Queue
+import queue
 from parser.dbzyz.page import Page
 from parser.dbzyz.vod import Vod
-
+from parser.dbzyz.tracker import MovieTracker
 from xmljson import yahoo
 from xml.etree.ElementTree import fromstring
 from json import dumps
@@ -26,12 +26,18 @@ class Workflow:
         console.setLevel(logging.INFO)
         self.__logger.addHandler(console)
         self.__logger.addHandler(fhandler)
-        self.__workQueue = Queue.Queue(10)
+        self.__workQueue = queue.Queue(100)
+        self.__movie_tracker = MovieTracker(config, 1, self.__workQueue)
 
     def run(self, page):
         self.__logger.info('config as following: '+str(self.__config))
         self.__logger.info('start to iterate movie resource')
+        self.__movie_tracker.start()
         self.__loop_resource(page)
+        self.__close()
+
+    def __close(self):
+        self.__movie_tracker.stop()
 
     def __page(self, url_template, page=1):
         current_pg_url = url_template.format(pg=page)
@@ -53,8 +59,8 @@ class Workflow:
 
     def __loop_resource(self, page=1, breakup_time=1):
         api = self.__apis[0]
-        total_load =0
-        start_sec= time.time()
+        total_load = 0
+        start_sec = time.time()
         while True:
             try:
                 page_data = self.__page(api['url'], page)
@@ -95,13 +101,14 @@ class Workflow:
                  tid : {tid}
                  year: {year}
                  type: {type}
+                 area: {area}
                  director: {director}
                  actor:{actor}
                  lang: {lang}
                  des : {des}
                  pic : {pic}
                  note: {note}
-                 stat: {stat}
+                 state: {state}
                  udpate : {update}
                  content:{content}
                  flag： {flag}
@@ -112,14 +119,17 @@ class Workflow:
                     tid=vod.tid(),
                     year=vod.year(),
                     type=vod.type(),
+                    area=vod.area(),
                     director=vod.director(),
                     actor=vod.actor(),
                     lang=vod.lang(),
                     des=vod.des(),
                     pic=vod.pic(),
                     note=vod.note(),
-                    stat=vod.state(),
+                    state=vod.state(),
                     update=vod.last_update(),
                     content=vod.content(),
                     flag=vod.content_flag())
+            self.__workQueue.put(vod)
+
         return vods_format

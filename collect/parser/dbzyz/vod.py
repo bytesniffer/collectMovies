@@ -3,6 +3,9 @@ class Vod:
     def __init__(self, vod):
         self.__vod = vod
 
+    def vod(self):
+        return self.__vod
+
     def actor(self):
         return self.__vod['actor']
 
