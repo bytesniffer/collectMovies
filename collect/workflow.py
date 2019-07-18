@@ -29,9 +29,9 @@ class Workflow:
         self.__workQueue = queue.Queue(100)
         self.__movie_tracker = MovieTracker(config, 1, self.__workQueue)
 
-    def run(self, page):
+    def run(self, page=1):
         self.__logger.info('config as following: '+str(self.__config))
-        self.__logger.info('start to iterate movie resource')
+        self.__logger.info('start to iterate movie resources')
         self.__movie_tracker.start()
         self.__loop_resource(page)
         self.__close()

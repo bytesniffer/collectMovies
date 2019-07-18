@@ -5,6 +5,7 @@ from db.database import MacVod
 import time
 import sys
 
+
 class MovieTracker:
 
         def __init__(self, config, threads, task_queue):
@@ -62,6 +63,9 @@ class MovieTracker:
                 self.__logger.info('new vod id:{},name:{}'.format(vod_id, vod_event.name()))
             self.__movie_id_set.add(int(vod_id))
 
+        def __type_filter(self, vod_event):
+            print('type filter')
+
         def stop(self):
             # wait vod event consume finish
             while len(self.__queue) > 0:
@@ -69,11 +73,6 @@ class MovieTracker:
             self.__stop.set()
             self.__logger.info('event queue is empty')
             self.__mac_vod_db.close()
-
-        def process(tid, vod_event):
-
-
-            print(vod_event)
 
         def __all_movie_ids(self):
             columns = 'vod_id'
@@ -91,12 +90,6 @@ class MovieTracker:
             for stat in vod_stat:
                 stat_map[stat[0]] = stat[1]
             return stat_map
-
-
-
-
-if __name__ == '__main__':
-    tracker = MovieTracker
 
 
 

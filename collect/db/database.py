@@ -28,9 +28,12 @@ class MacVod:
 
     def insert_mac_vod(self, vod):
 
-        insert_sql = """INSERT INTO mac_vod(vod_id,type_id,type_id_1,vod_name,vod_year,vod_pic,vod_actor,\
-                                          vod_director,vod_remarks,vod_state,vod_lang,vod_class,vod_area,vod_play_from,\
-                                          vod_content,vod_play_url,vod_down_url,vod_time,vod_time_add,vod_status) values({})""".format(self.__format_values(vod))
+        insert_sql = """INSERT INTO mac_vod(vod_id,type_id,type_id_1,vod_name,vod_year,
+                                          vod_pic,vod_actor,vod_director,vod_remarks,vod_state,
+                                          vod_lang,vod_class,vod_area,vod_play_from,vod_content,vod_play_server,
+                                          vod_play_url,vod_down_url,vod_time,vod_time_add,
+                                          vod_status) values({})""".format(
+                                          self.__format_values(vod))
 
         try:
             self.__cursor.execute(insert_sql)
@@ -56,7 +59,7 @@ class MacVod:
             vod_status = -1
         values = """{vod_id},{type_id},{type_id_1},'{vod_name}',{vod_year},'{vod_pic}','{vod_actor}',\
           '{vod_director}','{vod_remarks}',{vod_state},'{vod_language}','{vod_class}','{vod_area}','{vod_play_from}',\
-          '{vod_content}','{vod_play_url}',' ',{vod_time},{vod_time_add},{vod_status} 
+          '{vod_content}','{vod_play_server}','{vod_play_url}',' ',{vod_time},{vod_time_add},{vod_status}
         """.format(vod_id=vod.id(),
                    type_id=type_id,
                    type_id_1=self.__mac_type_pid_mapper[type_id],
@@ -72,6 +75,7 @@ class MacVod:
                    vod_area=vod.area(),
                    vod_play_from=vod.content_flag(),
                    vod_content=vod.des(),
+                   vod_play_server='no',
                    vod_play_url=vod.content(),
                    vod_time=self.__date_timestamp(vod.last_update()),
                    vod_time_add=int(time.time()),
